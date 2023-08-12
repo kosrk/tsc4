@@ -19,6 +19,11 @@ describe('Task4', () => {
 
         task4 = blockchain.openContract(Task4.createFromConfig({}, code));
 
+        await blockchain.setVerbosityForAddress(task4.address, {
+            blockchainLogs: false,
+            vmLogs: 'vm_logs_full',
+        });
+
         const deployer = await blockchain.treasury('deployer');
 
         const deployResult = await task4.sendDeploy(deployer.getSender(), toNano('0.05'));

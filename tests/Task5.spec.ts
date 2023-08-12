@@ -19,6 +19,11 @@ describe('Task5', () => {
 
         task5 = blockchain.openContract(Task5.createFromConfig({}, code));
 
+        await blockchain.setVerbosityForAddress(task5.address, {
+            blockchainLogs: false,
+            vmLogs: 'vm_logs_full',
+        });
+
         const deployer = await blockchain.treasury('deployer');
 
         const deployResult = await task5.sendDeploy(deployer.getSender(), toNano('0.05'));
@@ -35,4 +40,30 @@ describe('Task5', () => {
         // the check is done inside beforeEach
         // blockchain and task5 are ready to use
     });
+
+    it('base case', async () => {
+        const { out, gasUsed} = await task5.getFibonacciSequence(
+            BigInt(1),
+            BigInt(3),
+        );
+        expect(out.remaining).toEqual(3);
+        expect(out.readBigNumber()).toEqual(1);
+        expect(out.readBigNumber()).toEqual(1);
+        expect(out.readBigNumber()).toEqual(2);
+        console.log(gasUsed);
+    });
+
+    it('second case', async () => {
+        const { out, gasUsed} = await task5.getFibonacciSequence(
+            BigInt(201),
+            BigInt(4),
+        );
+        expect(out.remaining).toEqual(4);
+        expect(out.readBigNumber()).toEqual(453973694165307953197296969697410619233826);
+        expect(out.readBigNumber()).toEqual(734544867157818093234908902110449296423351);
+        expect(out.readBigNumber()).toEqual(1188518561323126046432205871807859915657177);
+        expect(out.readBigNumber()).toEqual(1923063428480944139667114773918309212080528);
+        console.log(gasUsed);
+    });
+
 });

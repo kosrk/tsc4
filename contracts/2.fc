@@ -9,11 +9,47 @@
   After calculating the result matrix, the function should return final result (as tuple).
 -}
 
+(int) tlen (tuple t) asm "TLEN";
+
 () recv_internal() {
 }
 
+;; Gas used:  5155n
+;; A[mXn] B[nXq]
+;; for(i = 0; i < m; i++)
+;;         for(j = 0; j < q; j++)
+;; {
+;;         C[i][j] = 0;
+;;         for(k = 0; k < n; k++)
+;;         C[i][j] += A[i][k] * B[k][j];
+;;         }
+
 ;; testable
 (tuple) matrix_multiplier(tuple matrixA, tuple matrixB) method_id {
-  return null();
-}
 
+  int m = matrixA.tlen();
+  int n = matrixB.tlen();
+  int q = matrixB.at(0).tlen();
+
+  tuple res = empty_tuple();
+  int i = 0;
+  while (i < m) {
+
+    int j = 0;
+    tuple jtup = empty_tuple();
+    while (j < q) {
+      int cij = 0;
+      int k = 0;
+      while (k < n) {
+        cij += matrixA.at(i).at(k) * matrixB.at(k).at(j);
+        k = k + 1;
+      }
+      jtup~tpush(cij);
+      j = j + 1;
+    }
+    res~tpush(jtup);
+    i = i + 1;
+  }
+
+  return res;
+}
