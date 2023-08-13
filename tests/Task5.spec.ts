@@ -78,6 +78,18 @@ describe('Task5', () => {
         console.log(gasUsed);
     });
 
+    it('n=2', async () => {
+        const { out, gasUsed} = await task5.getFibonacciSequence(
+            BigInt(2),
+            BigInt(3),
+        );
+        expect(out.remaining).toEqual(3);
+        expect(out.readBigNumber()).toEqual(1n);
+        expect(out.readBigNumber()).toEqual(2n);
+        expect(out.readBigNumber()).toEqual(3n);
+        console.log(gasUsed);
+    });
+
     it('gas test', async () => {
         const { out, gasUsed} = await task5.getFibonacciSequence(
             BigInt(350),
@@ -87,12 +99,30 @@ describe('Task5', () => {
         console.log(gasUsed);
     });
 
-    it('max test', async () => {
+    it('max N test', async () => {
         const { out, gasUsed} = await task5.getFibonacciSequence(
             BigInt(370),
             BigInt(1),
         );
         expect(out.remaining).toEqual(1);
+        console.log(gasUsed);
+    });
+
+    it('max K test', async () => {
+        const { out, gasUsed} = await task5.getFibonacciSequence(
+            BigInt(116),
+            BigInt(255),
+        );
+        expect(out.remaining).toEqual(255);
+        console.log(gasUsed);
+    });
+
+    it('zero K test', async () => {
+        const { out, gasUsed} = await task5.getFibonacciSequence(
+            BigInt(370),
+            BigInt(0),
+        );
+        expect(out.remaining).toEqual(0);
         console.log(gasUsed);
     });
 
