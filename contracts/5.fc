@@ -28,7 +28,7 @@ forall X -> (tuple) to_tuple (X x) asm "NOP";
   }
 
   if k == 0 {
-    return null();
+    return empty_tuple();
   }
 
   tuple res = empty_tuple();
