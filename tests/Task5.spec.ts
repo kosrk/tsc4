@@ -87,4 +87,13 @@ describe('Task5', () => {
         console.log(gasUsed);
     });
 
+    it('max test', async () => {
+        const { out, gasUsed} = await task5.getFibonacciSequence(
+            BigInt(370),
+            BigInt(1),
+        );
+        //expect(out.remaining).toEqual(1);
+        console.log(gasUsed);
+    });
+
 });

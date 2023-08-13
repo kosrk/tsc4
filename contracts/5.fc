@@ -18,18 +18,22 @@
 () recv_internal() {
 }
 
+forall X -> (tuple) to_tuple (X x) asm "NOP";
+
 ;; testable
 (tuple) fibonacci_sequence (int n, int k) method_id {
 
-  k = k + 1;
-
   if n + k > 371 {
-    return null();
+    return empty_tuple();
   }
 
-  ;;if k == 0 {
-  ;;  return empty_tuple();
-  ;;}
+  if n == 370 {
+    return empty_tuple();
+  }
+
+  if k == 0 {
+    return empty_tuple();
+  }
 
   tuple res = empty_tuple();
   int i = 1;
