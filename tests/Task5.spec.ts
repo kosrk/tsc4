@@ -47,9 +47,9 @@ describe('Task5', () => {
             BigInt(3),
         );
         expect(out.remaining).toEqual(3);
-        expect(out.readBigNumber()).toEqual(1);
-        expect(out.readBigNumber()).toEqual(1);
-        expect(out.readBigNumber()).toEqual(2);
+        expect(out.readBigNumber()).toEqual(1n);
+        expect(out.readBigNumber()).toEqual(1n);
+        expect(out.readBigNumber()).toEqual(2n);
         console.log(gasUsed);
     });
 
@@ -59,10 +59,31 @@ describe('Task5', () => {
             BigInt(4),
         );
         expect(out.remaining).toEqual(4);
-        expect(out.readBigNumber()).toEqual(453973694165307953197296969697410619233826);
-        expect(out.readBigNumber()).toEqual(734544867157818093234908902110449296423351);
-        expect(out.readBigNumber()).toEqual(1188518561323126046432205871807859915657177);
-        expect(out.readBigNumber()).toEqual(1923063428480944139667114773918309212080528);
+        expect(out.readBigNumber()).toEqual(453973694165307953197296969697410619233826n);
+        expect(out.readBigNumber()).toEqual(734544867157818093234908902110449296423351n);
+        expect(out.readBigNumber()).toEqual(1188518561323126046432205871807859915657177n);
+        expect(out.readBigNumber()).toEqual(1923063428480944139667114773918309212080528n);
+        console.log(gasUsed);
+    });
+
+    it('n=0', async () => {
+        const { out, gasUsed} = await task5.getFibonacciSequence(
+            BigInt(0),
+            BigInt(3),
+        );
+        expect(out.remaining).toEqual(3);
+        expect(out.readBigNumber()).toEqual(0n);
+        expect(out.readBigNumber()).toEqual(1n);
+        expect(out.readBigNumber()).toEqual(1n);
+        console.log(gasUsed);
+    });
+
+    it('gas test', async () => {
+        const { out, gasUsed} = await task5.getFibonacciSequence(
+            BigInt(350),
+            BigInt(1),
+        );
+        expect(out.remaining).toEqual(1);
         console.log(gasUsed);
     });
 
