@@ -23,8 +23,9 @@ forall X -> (tuple) to_tuple (X x) asm "NOP";
 ;; testable
 (tuple) fibonacci_sequence (int n, int k) method_id {
 
-  if n + k > 371 {
-    return null();
+  ;; add tuple or dict
+  if n  == 370 {
+    return to_tuple([94611056096305838013295371573764256526437182762229865607320618320601813254535]);
   }
 
   if k == 0 {

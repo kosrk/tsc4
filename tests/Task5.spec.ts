@@ -117,6 +117,7 @@ describe('Task5', () => {
             BigInt(1),
         );
         expect(out.remaining).toEqual(1);
+        expect(out.readBigNumber()).toEqual(94611056096305838013295371573764256526437182762229865607320618320601813254535n);
         console.log(gasUsed);
     });
 
