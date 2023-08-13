@@ -92,7 +92,7 @@ describe('Task5', () => {
             BigInt(370),
             BigInt(1),
         );
-        //expect(out.remaining).toEqual(1);
+        expect(out.remaining).toEqual(1);
         console.log(gasUsed);
     });
 

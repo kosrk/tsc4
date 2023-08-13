@@ -27,43 +27,45 @@ forall X -> (tuple) to_tuple (X x) asm "NOP";
     return empty_tuple();
   }
 
-  if n == 370 {
-    return empty_tuple();
-  }
-
   if k == 0 {
     return empty_tuple();
   }
 
   tuple res = empty_tuple();
-  int i = 1;
-  int prev = 0;
+  int i = 3;
+  int prev = 1;
   int cur = 1;
+  int x = 0;
 
   if n == 0 {
     res~tpush(0);
-    i = 0;
+    i = 1;
+    prev = 0;
     cur = 1;
-    k -= 1;
   }
 
   if n == 1 {
     res~tpush(1);
-    i = 1;
-    cur = 1;
+    i = 2;
     prev = 1;
-    k -= 1;
+    cur = 1;
+  }
+
+  if (k > 1) & (i >= n) {
+    res~tpush(cur);
+    i += 1;
   }
 
   while (i < n + k) {
+    x = cur;
+    cur = prev + cur;
     if i >= n {
       res~tpush(cur);
     }
-    int x = cur;
-    cur = prev + cur;
     prev = x;
     i += 1;
   }
+
   return res;
 
 
