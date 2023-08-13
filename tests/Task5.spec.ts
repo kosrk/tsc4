@@ -41,19 +41,7 @@ describe('Task5', () => {
         // blockchain and task5 are ready to use
     });
 
-    it('base case', async () => {
-        const { out, gasUsed} = await task5.getFibonacciSequence(
-            BigInt(1),
-            BigInt(3),
-        );
-        expect(out.remaining).toEqual(3);
-        expect(out.readBigNumber()).toEqual(1n);
-        expect(out.readBigNumber()).toEqual(1n);
-        expect(out.readBigNumber()).toEqual(2n);
-        console.log(gasUsed);
-    });
-
-    it('second case', async () => {
+    it('big case', async () => {
         const { out, gasUsed} = await task5.getFibonacciSequence(
             BigInt(201),
             BigInt(4),
@@ -78,6 +66,18 @@ describe('Task5', () => {
         console.log(gasUsed);
     });
 
+    it('n=1', async () => {
+        const { out, gasUsed} = await task5.getFibonacciSequence(
+            BigInt(1),
+            BigInt(3),
+        );
+        expect(out.remaining).toEqual(3);
+        expect(out.readBigNumber()).toEqual(1n);
+        expect(out.readBigNumber()).toEqual(1n);
+        expect(out.readBigNumber()).toEqual(2n);
+        console.log(gasUsed);
+    });
+
     it('n=2', async () => {
         const { out, gasUsed} = await task5.getFibonacciSequence(
             BigInt(2),
@@ -87,6 +87,18 @@ describe('Task5', () => {
         expect(out.readBigNumber()).toEqual(1n);
         expect(out.readBigNumber()).toEqual(2n);
         expect(out.readBigNumber()).toEqual(3n);
+        console.log(gasUsed);
+    });
+
+    it('n=3', async () => {
+        const { out, gasUsed} = await task5.getFibonacciSequence(
+            BigInt(3),
+            BigInt(3),
+        );
+        expect(out.remaining).toEqual(3);
+        expect(out.readBigNumber()).toEqual(2n);
+        expect(out.readBigNumber()).toEqual(3n);
+        expect(out.readBigNumber()).toEqual(5n);
         console.log(gasUsed);
     });
 
