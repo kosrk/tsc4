@@ -19,8 +19,89 @@
 () recv_internal() {
 }
 
+(int) ubits(int v) impure asm "UBITSIZE";
+forall X -> int is_null (X x) asm "ISNULL";
+forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
+forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
+
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
-  return begin_cell().end_cell();
+
+  int flen = ubits(flag);
+  int vlen = ubits(value);
+
+  int flagbuffer = 0;
+  int flagbufferlen = 0;
+  int fmask = ~ (1 << flen);
+
+  int writebuffer = 0;
+  int writebufferlen = 0;
+
+  int rbits = 0;
+
+  tuple stack = null();
+  tuple resstack = null();
+  builder b = begin_cell();
+
+  stack~push_back(linked_list.begin_parse());
+
+  while (~ stack.is_null()) {
+    slice s = stack~pop_back();
+
+    while (~ s.slice_data_empty?()) {
+      int bit = s~load_uint(1);
+      rbits = flen - flagbufferlen - 1;
+      flagbuffer += (bit << rbits);
+      flagbufferlen += 1;
+
+      if (rbits == 0) {
+        int builderrbits = 1023 - b.builder_bits();
+        if flagbuffer == flag {
+          writebuffer = value;
+          writebufferlen = vlen;
+          flagbuffer = 0;
+          flagbufferlen = 0;
+        } else {
+          writebuffer = flagbuffer >> flen - 1;
+          writebufferlen = 1;
+          flagbuffer = (flagbuffer << 1) & fmask;
+          flagbufferlen -= 1;
+        }
+
+        if builderrbits > writebufferlen {
+          b~store_uint(writebuffer, writebufferlen);
+        } else {
+          resstack~push_back(b);
+          b = begin_cell().store_uint(writebuffer, writebufferlen);
+        }
+      }
+    }
+
+    if (~ s.slice_refs_empty?()) {
+      stack~push_back(s~load_ref().begin_parse());
+    }
+  }
+
+  if (1023 - b.builder_bits()) > flagbufferlen {
+    b~store_uint(flagbuffer >> flen - flagbufferlen, flagbufferlen);
+  } else {
+    resstack~push_back(b);
+    b = begin_cell().store_uint(flagbuffer >> flen - flagbufferlen, flagbufferlen);
+  }
+
+  resstack~push_back(b);
+
+;;   if (resstack.is_null()) {
+;;     return begin_cell().end_cell();
+;;   }
+
+  builder res = resstack~pop_back();
+
+  while (~ resstack.is_null()) {
+    res = resstack~pop_back().store_ref(res.end_cell());
+  }
+
+  return res.end_cell();
+
 }
 
