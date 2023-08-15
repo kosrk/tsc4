@@ -1,4 +1,5 @@
-import { Address, beginCell, Cell, Contract, contractAddress, ContractProvider, Sender, SendMode } from 'ton-core';
+import {Address, beginCell, Cell, Contract, contractAddress, ContractProvider, Sender, SendMode, Tuple} from 'ton-core';
+import { default as toncore } from 'ton-core';
 
 export type Task3Config = {};
 
@@ -25,5 +26,17 @@ export class Task3 implements Contract {
             sendMode: SendMode.PAY_GAS_SEPARATELY,
             body: beginCell().endCell(),
         });
+    }
+
+    async getFindAndReplace(provider: ContractProvider, flag: bigint, value: bigint, linked_list: Cell) {
+        const result = await provider.get('find_and_replace', [
+            { type: 'int', value: flag },
+            { type: 'int', value: value },
+            { type: 'cell', cell: linked_list },
+        ]);
+        return {
+            out: result.stack.readCell(),
+            gasUsed: result.gasUsed,
+        };
     }
 }

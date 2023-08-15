@@ -1,5 +1,5 @@
 import { Blockchain, SandboxContract } from '@ton-community/sandbox';
-import { Cell, toNano } from 'ton-core';
+import {beginCell, Cell, toNano} from 'ton-core';
 import { Task4 } from '../wrappers/Task4';
 import '@ton-community/test-utils';
 import { compile } from '@ton-community/blueprint';
@@ -40,4 +40,39 @@ describe('Task4', () => {
         // the check is done inside beforeEach
         // blockchain and task4 are ready to use
     });
+
+    it('encrypt', async () => {
+        const inputCell = beginCell()
+            .storeUint(0, 32)
+            .storeStringTail('blah12345677!@#$#^&*(~SGAfjsfhsfjsafhsdDSHAKGHSAFGHFGJJSHFJFsfgfhagfhsgfhgshfgGSHFAHGFHSGHsaffsdasfsafsafAGFYWGYFGwygsgdsgdgYWDGWYAg34362573258uhgashffsgghjcbvhshbhjgfagfhsagghgfhasgdwreytwryargfhasgfghjasgfvchsagfhasgfhsgfhagfhasgfsahghajkghsjagdhagsywteywatrgwfsagf')
+            .endCell();
+
+        const outputCell = beginCell()
+            .storeUint(0, 32)
+            .storeStringTail('eodk12345677!@#$#^&*(~VJDimvikvimvdikvgGVKDNJKVDIJKIJMMVKIMIvijikdjikvjikjvkijJVKIDKJIKVJKvdiivgdvivdivdiDJIBZJBIJzbjvjgvjgjBZGJZBDj34362573258xkjdvkiivjjkmfeykvkekmjidjikvdjjkjikdvjgzuhbwzubdujikdvjijkmdvjiyfkvdjikdvjikvjikdjikdvjivdkjkdmnjkvmdjgkdjvbzwhbzdwujzivdji')
+            .endCell();
+
+        const res = await
+            task4.getCaesarCipherEncrypt(BigInt(3), inputCell);
+        expect(res.out).toEqualCell(outputCell)
+        console.log('Gas used: ', res.gasUsed);
+    });
+
+    it('decrypt', async () => {
+        const inputCell = beginCell()
+            .storeUint(0, 32)
+            .storeStringTail('eodk12345677!@#$#^&*(~VJDimvikvimvdikvgGVKDNJKVDIJKIJMMVKIMIvijikdjikvjikjvkijJVKIDKJIKVJKvdiivgdvivdivdiDJIBZJBIJzbjvjgvjgjBZGJZBDj34362573258xkjdvkiivjjkmfeykvkekmjidjikvdjjkjikdvjgzuhbwzubdujikdvjijkmdvjiyfkvdjikdvjikvjikdjikdvjivdkjkdmnjkvmdjgkdjvbzwhbzdwujzivdji')
+            .endCell();
+
+        const outputCell = beginCell()
+            .storeUint(0, 32)
+            .storeStringTail('blah12345677!@#$#^&*(~SGAfjsfhsfjsafhsdDSHAKGHSAFGHFGJJSHFJFsfgfhagfhsgfhgshfgGSHFAHGFHSGHsaffsdasfsafsafAGFYWGYFGwygsgdsgdgYWDGWYAg34362573258uhgashffsgghjcbvhshbhjgfagfhsagghgfhasgdwreytwryargfhasgfghjasgfvchsagfhasgfhsgfhagfhasgfsahghajkghsjagdhagsywteywatrgwfsagf')
+            .endCell();
+
+        const res = await
+            task4.getCaesarCipherDecrypt(BigInt(3), inputCell);
+        expect(res.out).toEqualCell(outputCell)
+        console.log('Gas used: ', res.gasUsed);
+    });
+
 });

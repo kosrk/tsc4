@@ -9,13 +9,77 @@
 () recv_internal() {
 }
 
+forall X -> int is_null (X x) asm "ISNULL";
+forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
+forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
+
 ;; testable
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
-  return begin_cell().end_cell();
+  int char = 0;
+  int nshift = shift % 26;
+  tuple stack = null();
+  tuple resstack = null();
+
+  slice s = text.begin_parse();
+  if s.slice_bits() < 32 {
+    return begin_cell().end_cell();
+  }
+  ;; s~skip_bits(32);
+
+  stack~push_back(s);
+
+  while (~ stack.is_null()) {
+    s = stack~pop_back();
+    builder b = begin_cell();
+
+    while (s.slice_bits() >= 8) {
+      char = s~load_uint(8);
+
+      if (char > 64) & (char < 91) {
+        char += nshift;
+        if char <= 64 {
+          char += 26;
+        }
+        if char >= 91 {
+          char -= 26;
+        }
+      } elseif (char > 96) & (char < 123) {
+        char += nshift;
+        if char <= 96 {
+          char += 26;
+        }
+        if char >= 123 {
+          char -= 26;
+        }
+      }
+
+      b~store_uint(char,8);
+    }
+
+    resstack~push_back(b);
+
+    if (~ s.slice_refs_empty?()) {
+      stack~push_back(s~load_ref().begin_parse());
+    }
+  }
+
+  if (resstack.is_null()) {
+    return begin_cell().end_cell();
+  }
+
+  builder res = resstack~pop_back();
+
+  while (~ resstack.is_null()) {
+    ;; b = resstack~pop_back();
+    res = resstack~pop_back().store_ref(res.end_cell());
+  }
+
+  return res.end_cell();
 }
 
 ;; testable
 (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
-  return begin_cell().end_cell();
+  int nshift = -1 * shift;
+  return caesar_cipher_encrypt(nshift, text);
 }
 
