@@ -14,104 +14,18 @@
 -}
 
 ;; gas for simple fib N=370 K=1: 100090n
-;; GasValue: 2521263
-;; Points: 5.2899134349198285
-
-;; with tuple [1] and if: 100178n
-;; without tuple and if: 100090n
-;;                       100332n
-;;                       100323n
-;;                       100204n
+;; Problem #5:
+;;         Compiled: true
+;;         Passed Tests: true
+;;         GasValue: 1725616
+;;         Points: 5.428511900794607
 
 () recv_internal() {
 }
 
 forall X -> (tuple) to_tuple (X x) asm "NOP";
 
-tuple simple_algo(int n, int k) method_id {
-
-  if (n + k > 371) | (k == 0) {
-    return empty_tuple();
-  }
-
-;;   if k == 0 {
-;;     return empty_tuple();
-;;   }
-
-  tuple res = empty_tuple();
-
-  int i = 1;
-  int prev = 1;
-  int cur = 0;
-  int x = 0;
-
-  if n == 0 {
-    res~tpush(0);
-  }
-
-  while (i < n + k) {
-    (cur, prev) = (prev + cur, cur);
-    if i >= n {
-      res~tpush(cur);
-    }
-    i += 1;
-  }
-
-  return res;
-}
-
-tuple with_map(int n, int k) method_id {
-
-  if n + k > 371 {
-    return null();
-  }
-
-  if k == 0 {
-    return empty_tuple();
-  }
-
-  tuple res = empty_tuple();
-
-  if n  > 370 {
-    tuple X = to_tuple([ 94611056096305838013295371573764256526437182762229865607320618320601813254535, 94611056096305838013295371573764256526437182762229865607320618320601813254535, 94611056096305838013295371573764256526437182762229865607320618320601813254535, 94611056096305838013295371573764256526437182762229865607320618320601813254535, 94611056096305838013295371573764256526437182762229865607320618320601813254535]);
-    int i = 0;
-    ;;     while (i < k) {
-    res~tpush(X.at(n - 370 + i));
-    ;;       i += 1;
-    ;;     }
-    ;;     return res;
-  }
-
-  int i = 1;
-  int prev = 1;
-  int cur = 0;
-  int x = 0;
-
-  if n == 0 {
-    res~tpush(0);
-  }
-
-  while (i < n + k) {
-    x = cur;
-    cur = prev + cur;
-    if i >= n {
-      res~tpush(cur);
-    }
-    prev = x;
-    i += 1;
-  }
-
-  return res;
-}
-
-;; (int, int) fast_doubling(int n) {
-;; ;;   if n == 0 {
-;; ;;     return (0, 1);
-;; ;;   }
-;; }
-
-;; testable
-(tuple) fibonacci_sequence (int n, int k) method_id {
+tuple simple_algo(int n, int k) inline {
 
   if (n + k > 371) | (k == 0) {
     return empty_tuple();
@@ -141,4 +55,98 @@ tuple with_map(int n, int k) method_id {
 
   return res;
 }
+
+;; tuple with_map(int n, int k) method_id {
+;;
+;;   if (n + k > 371) | (k == 0) {
+;;     return empty_tuple();
+;;   }
+;;
+;;   tuple res = empty_tuple();
+;;
+;;   if n  > 370 {
+;;     tuple X = to_tuple([ 94611056096305838013295371573764256526437182762229865607320618320601813254535, 94611056096305838013295371573764256526437182762229865607320618320601813254535, 94611056096305838013295371573764256526437182762229865607320618320601813254535, 94611056096305838013295371573764256526437182762229865607320618320601813254535, 94611056096305838013295371573764256526437182762229865607320618320601813254535]);
+;;     int i = 0;
+;;     ;;     while (i < k) {
+;;     res~tpush(X.at(n - 370 + i));
+;;     ;;       i += 1;
+;;     ;;     }
+;;     ;;     return res;
+;;   }
+;;
+;;   int i = 1;
+;;   int prev = 1;
+;;   int cur = 0;
+;;   int x = 0;
+;;
+;;   if n == 0 {
+;;     res~tpush(0);
+;;   }
+;;
+;;   while (i < n) {
+;;     (cur, prev) = (prev + cur, cur);
+;;     i += 1;
+;;   }
+;;
+;;   while (i < n + k) {
+;;     (cur, prev) = (prev + cur, cur);
+;;     res~tpush(cur);
+;;     i += 1;
+;;   }
+;;
+;;   return res;
+;; }
+
+const MOD = 1000000007;
+
+(int, int) fast_doubling(int n) inline {
+
+  if n == 0 {
+    return (0, 1);
+  }
+
+  (int a, int b) = fast_doubling(n / 2);
+
+  int c = 2 * b - a;
+
+  if (c < 0) {
+    c += MOD;
+  }
+
+  c = (a * c) % MOD;
+  int d = (a * a + b * b) % MOD;
+  if (n % 2 == 0) {
+    return (c, d);
+  }
+  return (d, c + d);
+}
+
+(tuple) fibonacci_s (int n, int k) method_id {
+;;   tuple x = simple_algo(40, 1);
+;;   x~dump();
+  return simple_algo(n, k);
+}
+
+;; testable
+(tuple) fibonacci_sequence (int n, int k) method_id {
+
+  if (n < 45) {
+    (int cur, int next) = fast_doubling(n);
+    int i = 1;
+    tuple res = to_tuple([cur]);
+
+    while (i < k) {
+      (cur, next) = (next, cur + next);
+      res~tpush(cur);
+      i += 1;
+    }
+    return res;
+  } else {
+    return simple_algo(n, k);
+  }
+
+}
+
+
+
 
