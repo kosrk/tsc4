@@ -27,9 +27,9 @@ forall X -> (tuple) to_tuple (X x) asm "NOP";
 
 tuple simple_algo(int n, int k) inline {
 
-  if (n + k > 371) | (k == 0) {
-    return empty_tuple();
-  }
+;;   if (n + k > 371) | (k == 0) {
+;;     return empty_tuple();
+;;   }
 
   tuple res = empty_tuple();
 
@@ -129,6 +129,10 @@ const MOD = 1000000007;
 
 ;; testable
 (tuple) fibonacci_sequence (int n, int k) method_id {
+
+  if (n + k > 371) | (k == 0) {
+    return empty_tuple();
+  }
 
   if (n < 45) {
     (int cur, int next) = fast_doubling(n);
