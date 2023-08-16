@@ -17,33 +17,69 @@
 ;; GasValue: 2521263
 ;; Points: 5.2899134349198285
 
+;; with tuple [1] and if: 100178n
+;; without tuple and if: 100090n
+;;                       100332n
+;;                       100323n
+;;                       100204n
+
 () recv_internal() {
 }
 
 forall X -> (tuple) to_tuple (X x) asm "NOP";
 
-;; testable
-(tuple) fibonacci_sequence (int n, int k) method_id {
+tuple simple_algo(int n, int k) method_id {
 
-  tuple X = to_tuple([94611056096305838013295371573764256526437182762229865607320618320601813254535]);
+  if (n + k > 371) | (k == 0) {
+    return empty_tuple();
+  }
+
+;;   if k == 0 {
+;;     return empty_tuple();
+;;   }
+
+  tuple res = empty_tuple();
+
+  int i = 1;
+  int prev = 1;
+  int cur = 0;
+  int x = 0;
+
+  if n == 0 {
+    res~tpush(0);
+  }
+
+  while (i < n + k) {
+    (cur, prev) = (prev + cur, cur);
+    if i >= n {
+      res~tpush(cur);
+    }
+    i += 1;
+  }
+
+  return res;
+}
+
+tuple with_map(int n, int k) method_id {
 
   if n + k > 371 {
     return null();
   }
 
-  tuple res = empty_tuple();
-  ;; add tuple or dict
-  if n  > 369 {
-    int i = 0;
-    while (i < k) {
-      res~tpush(X.at(n - 370 + i));
-      i += 1;
-    }
-    return res;
-  }
-
   if k == 0 {
     return empty_tuple();
+  }
+
+  tuple res = empty_tuple();
+
+  if n  > 370 {
+    tuple X = to_tuple([ 94611056096305838013295371573764256526437182762229865607320618320601813254535, 94611056096305838013295371573764256526437182762229865607320618320601813254535, 94611056096305838013295371573764256526437182762229865607320618320601813254535, 94611056096305838013295371573764256526437182762229865607320618320601813254535, 94611056096305838013295371573764256526437182762229865607320618320601813254535]);
+    int i = 0;
+    ;;     while (i < k) {
+    res~tpush(X.at(n - 370 + i));
+    ;;       i += 1;
+    ;;     }
+    ;;     return res;
   }
 
   int i = 1;
@@ -66,7 +102,43 @@ forall X -> (tuple) to_tuple (X x) asm "NOP";
   }
 
   return res;
+}
 
+;; (int, int) fast_doubling(int n) {
+;; ;;   if n == 0 {
+;; ;;     return (0, 1);
+;; ;;   }
+;; }
 
+;; testable
+(tuple) fibonacci_sequence (int n, int k) method_id {
+
+  if (n + k > 371) | (k == 0) {
+    return empty_tuple();
+  }
+
+  tuple res = empty_tuple();
+
+  int i = 1;
+  int prev = 1;
+  int cur = 0;
+  int x = 0;
+
+  if n == 0 {
+    res~tpush(0);
+  }
+
+  while (i < n) {
+    (cur, prev) = (prev + cur, cur);
+    i += 1;
+  }
+
+  while (i < n + k) {
+    (cur, prev) = (prev + cur, cur);
+    res~tpush(cur);
+    i += 1;
+  }
+
+  return res;
 }
 
