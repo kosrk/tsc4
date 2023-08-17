@@ -14,7 +14,7 @@ forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
 forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 
 ;; testable
-(cell) caesar_cipher_encrypt(int shift, cell text) method_id {
+(cell) caesar_cipher_encrypt(int shift, cell text) inline method_id {
   int char = 0;
   int nshift = shift % 26;
   tuple stack = null();
