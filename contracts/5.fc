@@ -44,12 +44,8 @@ tuple solve(int f0, int f1, int k, int nl) inline asm
 
   int nl = n + k - 2;
 
-  if (nl > 369) | (k == 0) {
-    return empty_tuple();
-  }
-
-;;   if (n == 0) & (k == 1) {
-;;     return to_tuple([0]);
+;;   if (nl > 369) | (k == 0) {
+;;     return empty_tuple();
 ;;   }
 
   return solve(0, 1, k, nl);
