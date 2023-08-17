@@ -13,21 +13,30 @@
   1923063428480944139667114773918309212080528]
 -}
 
-;; gas for simple fib N=370 K=1: 25564n 25582n 22674n 22666n
 ;; Problem #5:
 ;;         Compiled: true
 ;;         Passed Tests: true
-;;         GasValue: 1688020
-;;         Points: 5.436497050342439
+;;         GasValue: 450439
+;;         Points: 5.8015506343899155
 
 () recv_internal() {
 }
 
 forall X -> (tuple) to_tuple (X x) asm "NOP";
 
+tuple solveshort(int k, int f0, int f1, int n) inline asm
+                                         ;; k 0 1 nl
+        " REPEAT:<{ "                    ;; k 0 1
+        " DUP2 "                         ;; k 0 1 0 1
+        " ADD "                          ;; k 0 1 0+1
+        " }> "                           ;; k 0 1 0+1
+        " DEPTH DEC PICK"                ;; 0 1 0+1 k
+        " TUPLEVAR "                     ;; 0 t
+        " 1 RETARGS "                    ;; t
+        ;
+
 tuple solve(int f0, int f1, int k, int n) inline asm
-        " 0 INT SWAP"
-                                         ;; 0 1 k 0 nl
+        " 0 INT SWAP"                    ;; 0 1 k 0 nl
         " REPEAT:<{ "                    ;; 0 1 k 0
         " OVER2 "                        ;; 0 1 k 0 0 1
         " ADD "                          ;; 0 1 k 0 0+1
@@ -43,6 +52,10 @@ tuple solve(int f0, int f1, int k, int n) inline asm
 
   if k == 0 {
     return empty_tuple();
+  }
+
+  if n + k <= 255 {
+    return solveshort(k, 0, 1, n + k - 2);
   }
 
   return solve(0, 1, k, n + k - 2);
