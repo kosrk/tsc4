@@ -27,13 +27,11 @@ forall X -> (tuple) to_tuple (X x) asm "NOP";
 
 tuple solve(int f0, int f1, int k, int n) inline asm
                                          ;; 0 1 k nl
-        " WHILE:<{ DUP }>DO<{ "          ;; WHILE nl != 0 ;; 0 1 k nl
-        " OVER2 "                        ;; 0 1 k nl 0 1
-        " ADD "                          ;; 0 1 k nl 0+1
-        " -ROT "                         ;; 0 1 0+1 k nl
-        " DEC "                          ;; 0 1 0+1 k nl-1
-        " }> "                           ;; 0 1 0+1 k nl-1
-        " DROP "                         ;; 0 1 0+1 k
+        " REPEAT:<{ "                    ;; 0 1 k
+        " s2 s1 PUSH2 "                  ;; 0 1 k 0 1
+        " ADD "                          ;; 0 1 k 0+1
+        " SWAP "                         ;; 0 1 0+1 k
+        " }> "                           ;; 0 1 0+1 k
         " TUPLEVAR "                     ;; 0 t
         " 1 RETARGS "                    ;; t
         ;
