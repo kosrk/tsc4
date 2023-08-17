@@ -48,9 +48,9 @@ tuple solve(int f0, int f1, int k, int nl) inline asm
     return empty_tuple();
   }
 
-  if (n == 0) & (k == 1) {
-    return to_tuple([0]);
-  }
+;;   if (n == 0) & (k == 1) {
+;;     return to_tuple([0]);
+;;   }
 
   return solve(0, 1, k, nl);
 
