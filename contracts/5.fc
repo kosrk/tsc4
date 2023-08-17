@@ -35,17 +35,17 @@ tuple solveshort(int k, int f0, int f1, int n) inline asm
         " 1 RETARGS "                    ;; t
         ;
 
-tuple solve(int f0, int f1, int k, int n) inline asm
-        " 0 INT SWAP"                    ;; 0 1 k 0 nl
-        " REPEAT:<{ "                    ;; 0 1 k 0
-        " OVER2 "                        ;; 0 1 k 0 0 1
-        " ADD "                          ;; 0 1 k 0 0+1
-        " -ROT "                         ;; 0 1 0+1 k 0
-        " }> "                           ;; 0 1 0+1 k 0
-        " DROP "                         ;; 0 1 0+1 k
-        " TUPLEVAR "                     ;; 0 t
-        " 1 RETARGS "                    ;; t
-        ;
+;; tuple solve(int f0, int f1, int k, int n) inline asm
+;;         " 0 INT SWAP"                    ;; 0 1 k 0 nl
+;;         " REPEAT:<{ "                    ;; 0 1 k 0
+;;         " OVER2 "                        ;; 0 1 k 0 0 1
+;;         " ADD "                          ;; 0 1 k 0 0+1
+;;         " -ROT "                         ;; 0 1 0+1 k 0
+;;         " }> "                           ;; 0 1 0+1 k 0
+;;         " DROP "                         ;; 0 1 0+1 k
+;;         " TUPLEVAR "                     ;; 0 t
+;;         " 1 RETARGS "                    ;; t
+;;         ;
 
 ;; testable
 (tuple) fibonacci_sequence (int n, int k) method_id {
@@ -54,11 +54,11 @@ tuple solve(int f0, int f1, int k, int n) inline asm
     return empty_tuple();
   }
 
-  if n + k <= 255 {
-    return solveshort(k, 0, 1, n + k - 2);
-  }
-
-  return solve(0, 1, k, n + k - 2);
+;;   if n + k <= 255 {
+  return solveshort(k, 0, 1, n + k - 2);
+;;   }
+;;
+;;   return solve(0, 1, k, n + k - 2);
 
 }
 
