@@ -13,7 +13,7 @@
   1923063428480944139667114773918309212080528]
 -}
 
-;; gas for simple fib N=370 K=1: 50639n
+;; gas for simple fib N=370 K=1: 37800n
 ;; Problem #5:
 ;;         Compiled: true
 ;;         Passed Tests: true
@@ -25,7 +25,7 @@
 
 forall X -> (tuple) to_tuple (X x) asm "NOP";
 
-tuple solve(int f0, int f1, int k, int nl) inline asm
+tuple solve(int f0, int f1, int k, int n) inline asm
                                          ;; 0 1 k nl
         " WHILE:<{ DUP }>DO<{ "          ;; WHILE nl != 0 ;; 0 1 k nl
         " OVER2 "                        ;; 0 1 k nl 0 1
@@ -35,20 +35,17 @@ tuple solve(int f0, int f1, int k, int nl) inline asm
         " }> "                           ;; 0 1 0+1 k nl-1
         " DROP "                         ;; 0 1 0+1 k
         " TUPLEVAR "                     ;; 0 t
-        " 1 INT "                        ;; 0 t 1
-        " ONLYTOPX "                     ;; t
+        " 1 RETARGS "                    ;; t
         ;
 
 ;; testable
 (tuple) fibonacci_sequence (int n, int k) method_id {
 
-  int nl = n + k - 2;
+  if k == 0 {
+    return empty_tuple();
+  }
 
-;;   if (nl > 369) | (k == 0) {
-;;     return empty_tuple();
-;;   }
-
-  return solve(0, 1, k, nl);
+  return solve(0, 1, k, n + k - 2);
 
 }
 
