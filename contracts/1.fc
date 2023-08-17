@@ -26,36 +26,54 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 ;;   return begin_cell().end_cell();
 ;; }
 
+;; ;; testable
+;; (cell) find_branch_by_hash(int hash, cell tree) method_id {
+;;
+;;   if tree.cell_hash() == hash {
+;;     return tree;
+;;   }
+;;
+;;   tuple stack = null();
+;;
+;;   stack~push_back(tree.begin_parse());
+;;
+;;   while (~ stack.is_null()) {
+;;
+;;     slice s = stack~pop_back();
+;;
+;;     repeat (s.slice_refs()) {
+;;
+;;       cell c1 = s~load_ref();
+;;
+;;       if c1.cell_hash() == hash {
+;;         return c1;
+;;       }
+;;
+;;       slice s1 = c1.begin_parse();
+;;       if s1.slice_refs() != 0 {
+;;         stack~push_back(s1);
+;;       }
+;;
+;;     }
+;;
+;;   }
+;;   return begin_cell().end_cell();
+;; }
+
 ;; testable
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
-
-  if tree.cell_hash() == hash {
-    return tree;
-  }
-
   tuple stack = null();
-
-  stack~push_back(tree.begin_parse());
-
+  stack~push_back(tree);
   while (~ stack.is_null()) {
+    cell c = stack~pop_back();
 
-    slice s = stack~pop_back();
-
-    repeat (s.slice_refs()) {
-
-      cell c1 = s~load_ref();
-
-      if c1.cell_hash() == hash {
-        return c1;
-      }
-
-      slice s1 = c1.begin_parse();
-      if s1.slice_refs() != 0 {
-        stack~push_back(s1);
-      }
-
+    if c.cell_hash() == hash {
+      return c;
     }
-
+    slice s = c.begin_parse();
+    repeat (s.slice_refs()) {
+      stack~push_back(s~load_ref());
+    }
   }
   return begin_cell().end_cell();
 }
