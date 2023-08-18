@@ -22,7 +22,7 @@ cell solve(int hash, cell c) inline asm(c hash)
         "   SWAP "                            ;; h c0              ;; h c1
         "   DUP2 "                            ;; h c0 h c0         ;; h c1 h c1
         "   HASHCU EQUAL "                    ;; h c0 eq           ;; h c1 eq
-        "   IFJMP:<{ NIP RETALT }> "          ;; h c0              ;; h c1
+        "   IFJMP:<{ 1 INT ONLYTOPX RETALT }> "          ;; h c0              ;; h c1
         "   CTOS "                            ;; h s0              ;; h s1
         "   DUP SREFS "                       ;; h s0 r0           ;; h s1 r1
         "   REPEAT:<{ "                       ;; h s0              ;; h s1
@@ -31,9 +31,8 @@ cell solve(int hash, cell c) inline asm(c hash)
         "   }>"                               ;; c1 c2 h s0
         "   DROP "                            ;; c1 c2 h           ;; h
         " }> "                                                     ;;
-;;         " DROP "                                                   ;; -
-;;         " NEWC ENDC "                                              ;; ec
-        " TRY:<{ DROP NEWC ENDC }>CATCH<{ NEWC ENDC 1 RETARGS }> "
+        " DROP "                                                   ;; -
+        " NEWC ENDC "                                              ;; ec
         ;
 
 ;; testable

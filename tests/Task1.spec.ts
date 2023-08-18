@@ -42,6 +42,7 @@ describe('Task1', () => {
     });
 
     const baseCell = Cell.fromBase64('te6ccgEBBAEAEQABBAAGAQEEAAcCAQQABQMAAA==')
+    const extraCell = Cell.fromBase64('te6ccgECQgEAAUUAAwABAQIDAAMDAwACCAMABAQEAwAFBQUDAAYGBgMABwcHAwAICAgDAAkJCQMACgoKAwALCwsDAAwMDAMADQ0NAwAODg4DAA8PDwMAEBAQAwAREREDABISEgMAExMTAwAUFBQDABUVFQMAFhYWAwAXFxcDABgYGAMAGRkZAwAaGhoDABsbGwMAHBwcAwAdHR0DAB4eHgMAHx8fAwAgICADACEhIQMAIiIiAwAjIyMDACQkJAMAJSUlAwAmJiYDACcnJwMAKCgoAwApKSkDACoqKgMAKysrAwAsLCwDAC0tLQMALi4uAwAvLy8DADAwMAMAMTExAwAyMjIDADMzMwMANDQ0AwA1NTUDADY2NgMANzc3AwA4ODgDADk5OQMAOjo6AwA7OzsDADw8PAMAPT09AwA+Pj4DAD8/PwMAQEBAAwBBQUEAAA==')
 
     it('base case', async () => {
         const { out, gasUsed} = await task1.getFindBranchByHash(
@@ -49,6 +50,17 @@ describe('Task1', () => {
             baseCell
         );
         expect(out.bits.length).toEqual(16);
+        // expect(gasUsed).toEqual(1230n);
+        console.log('Gas used: ', gasUsed);
+
+    });
+
+    it('extra case', async () => {
+        const { out, gasUsed} = await task1.getFindBranchByHash(
+            BigInt(112217716449989047460221684632076053244058804272382489846864958003834180757136n),
+            extraCell
+        );
+        expect(out.hash().toString('hex')).toEqual("f818fa08b955b4796cf7c7ce7b627763efd83fdac35f71cd7688165ab50e6690");
         // expect(gasUsed).toEqual(1230n);
         console.log('Gas used: ', gasUsed);
 
