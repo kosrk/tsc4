@@ -6,6 +6,9 @@
   character should go to the beginning. Return new text encoded in cell.
 -}
 
+;; 190459n
+;; 170065n
+
 () recv_internal() {
 }
 
@@ -42,9 +45,9 @@ int rot_char(int char, int shift) inline {
   tuple resstack = null();
 
   slice s = text.begin_parse();
-  if s.slice_bits() < 32 {
-    return begin_cell().end_cell();
-  }
+;;   if s.slice_bits() < 32 {
+;;     return begin_cell().end_cell();
+;;   }
 
   stack~push_back(s);
 
@@ -52,7 +55,7 @@ int rot_char(int char, int shift) inline {
     s = stack~pop_back();
     builder b = begin_cell();
 
-    while (s.slice_bits() >= 8) {
+    repeat (s.slice_bits() / 8) {
       b~store_uint(rot_char(s~load_uint(8), nshift),8);
     }
 
