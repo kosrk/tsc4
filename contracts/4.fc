@@ -44,9 +44,9 @@ int rot_char(int char, int shift) inline {
     resstack~push_back(b);
   }
 
-  if (resstack.is_null()) {
-    return begin_cell().end_cell();
-  }
+;;   if (resstack.is_null()) {
+;;     return begin_cell().end_cell();
+;;   }
 
   builder res = resstack~pop_back();
 
