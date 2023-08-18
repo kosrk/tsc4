@@ -36,7 +36,7 @@ int rot_char(int char, int shift) inline {
   resstack~push_back(b);
 
   repeat s.slice_depth() {
-    s = s~load_ref().begin_parse();
+    s = s.preload_ref().begin_parse();
     builder b = begin_cell();
     repeat (s.slice_bits() / 8) {
       b~store_uint(rot_char(s~load_uint(8), nshift),8);
@@ -44,9 +44,9 @@ int rot_char(int char, int shift) inline {
     resstack~push_back(b);
   }
 
-;;   if (resstack.is_null()) {
-;;     return begin_cell().end_cell();
-;;   }
+  if (resstack.is_null()) {
+    return begin_cell().end_cell();
+  }
 
   builder res = resstack~pop_back();
 
