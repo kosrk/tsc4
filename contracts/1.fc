@@ -17,22 +17,22 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 
 cell solve(int hash, cell c) inline asm(c hash)
         " c2 SAVE "
-        " SAMEALTSAVE "                       ;; STEP 1            ;; STEP 2
-        " WHILE:<{ DEPTH DEC }>DO<{ "         ;; c0 h              ;; c1 h
-        "   SWAP "                            ;; h c0              ;; h c1
-        "   DUP2 "                            ;; h c0 h c0         ;; h c1 h c1
-        "   HASHCU EQUAL "                    ;; h c0 eq           ;; h c1 eq
-        "   IFJMP:<{ 1 INT ONLYTOPX RETALT }> "          ;; h c0              ;; h c1
-        "   CTOS "                            ;; h s0              ;; h s1
-        "   DUP SREFS "                       ;; h s0 r0           ;; h s1 r1
-        "   REPEAT:<{ "                       ;; h s0              ;; h s1
-        "     LDREF "                         ;; h c1 s0           ;;
-        "     s1 s2 XCHG "                    ;; c1 h s0           ;;
-        "   }>"                               ;; c1 c2 h s0
-        "   DROP "                            ;; c1 c2 h           ;; h
-        " }> "                                                     ;;
-        " DROP "                                                   ;; -
-        " NEWC ENDC "                                              ;; ec
+        " SAMEALTSAVE "                         ;; STEP 1            ;; STEP 2
+        " WHILE:<{ DEPTH DEC }>DO<{ "           ;; c0 h              ;; c1 h
+        "   SWAP "                              ;; h c0              ;; h c1
+        "   DUP2 "                              ;; h c0 h c0         ;; h c1 h c1
+        "   HASHCU EQUAL "                      ;; h c0 eq           ;; h c1 eq
+        "   IFJMP:<{ 1 INT ONLYTOPX RETALT }> " ;; h c0              ;; h c1
+        "   CTOS "                              ;; h s0              ;; h s1
+        "   DUP SREFS "                         ;; h s0 r0           ;; h s1 r1
+        "   REPEAT:<{ "                         ;; h s0              ;; h s1
+        "     LDREF "                           ;; h c1 s0           ;;
+        "     s1 s2 XCHG "                      ;; c1 h s0           ;;
+        "   }>"                                 ;; c1 c2 h s0
+        "   DROP "                              ;; c1 c2 h           ;; h
+        " }> "                                                       ;;
+        " DROP "                                                     ;; -
+        " NEWC ENDC "                                                ;; ec
         ;
 
 ;; testable
