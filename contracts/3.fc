@@ -230,7 +230,7 @@ tuple replacer(cell c, tuple st, int buffer, int buffer_len, int flag, int flen,
 
   while (~ stack.is_null()) {
     stack~pop_back();
-  res~dump();
+;;   res~dump();
     res = stack~pop_back().store_ref(res.end_cell());
   }
 
