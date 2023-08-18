@@ -57,7 +57,7 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 
   slice s = linked_list.begin_parse();
 
-  while (~ s.slice_data_empty?()) {
+  repeat (s.slice_bits()) {
     int bit = s~load_uint(1);
     rbits = flen - flagbufferlen - 1;
     flagbuffer += (bit << rbits);
@@ -88,7 +88,7 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 
   repeat s.slice_depth() {
     s = s.preload_ref().begin_parse();
-    while (~ s.slice_data_empty?()) {
+    repeat (s.slice_bits()) {
       int bit = s~load_uint(1);
       rbits = flen - flagbufferlen - 1;
       flagbuffer += (bit << rbits);
