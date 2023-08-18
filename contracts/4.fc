@@ -6,9 +6,6 @@
   character should go to the beginning. Return new text encoded in cell.
 -}
 
-;; 190459n
-;; 170065n
-
 () recv_internal() {
 }
 
@@ -18,21 +15,9 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 
 int rot_char(int char, int shift) inline {
   if (char > 64) & (char < 91) {
-    char += shift;
-    if char <= 64 {
-      char += 26;
-    }
-    if char >= 91 {
-      char -= 26;
-    }
+    char = (char - 65 + shift) % 26 + 65;
   } elseif (char > 96) & (char < 123) {
-    char += shift;
-    if char <= 96 {
-      char += 26;
-    }
-    if char >= 123 {
-      char -= 26;
-    }
+    char = (char - 97 + shift) % 26 + 97;
   }
   return char;
 }
@@ -45,9 +30,6 @@ int rot_char(int char, int shift) inline {
   tuple resstack = null();
 
   slice s = text.begin_parse();
-;;   if s.slice_bits() < 32 {
-;;     return begin_cell().end_cell();
-;;   }
 
   stack~push_back(s);
 
