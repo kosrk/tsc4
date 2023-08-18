@@ -6,7 +6,9 @@
   this branch should be returned. Return empty cell if the branch is not found.
 -}
 
-;; list ver 5.396566123952745
+;; list ver 5.4487944228834575
+;; 1210n 1117n
+;; 2857n 3015n
 
 forall X -> int is_null (X x) asm "ISNULL";
 forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
@@ -16,12 +18,12 @@ forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
 }
 
 cell solve(int hash, cell c) inline asm(c hash)
-                                                ;; STEP 1            ;; STEP 2
-        " WHILE:<{ DEPTH DEC }>DO<{ "           ;; c0 h              ;; c1 h
+        " 1 INT "                                        ;; STEP 1            ;; STEP 2
+        " WHILE:<{ }>DO<{ "           ;; c0 h              ;; c1 h
         "   SWAP "                              ;; h c0              ;; h c1
         "   DUP2 "                              ;; h c0 h c0         ;; h c1 h c1
         "   HASHCU EQUAL "                      ;; h c0 eq           ;; h c1 eq
-        "   IF:<{ 1 RETARGS }>ELSE<{ "          ;; h c0              ;; h c1
+        "   IF:<{ 0 INT 2 RETARGS }>ELSE<{ "          ;; h c0              ;; h c1
         "     CTOS "                            ;; h s0              ;; h s1
         "     DUP SREFS "                       ;; h s0 r0           ;; h s1 r1
         "     REPEAT:<{ "                       ;; h s0              ;; h s1
@@ -29,9 +31,11 @@ cell solve(int hash, cell c) inline asm(c hash)
         "       s1 s2 XCHG "                    ;; c1 h s0           ;;
         "     }>"
         "   DROP "                              ;; c1 c2 h           ;; h
+        "   DEPTH DEC "
+        "   IFNOT:<{ DROP NEWC ENDC 0 INT }>ELSE<{ 1 INT }> "
         "   }> "                                ;; c1 c2 h           ;; h
         " }> "
-        " TRY:<{ DUP CDEPTH DROP 1 RETARGS }>CATCH<{ NEWC ENDC 1 RETARGS }> "
+
         ;
 
 ;; testable
