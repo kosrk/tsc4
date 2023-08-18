@@ -36,205 +36,108 @@
 forall X -> int is_null (X x) asm "ISNULL";
 forall X -> (tuple, ()) push_back (tuple tail, X head) asm "CONS";
 forall X -> (tuple, (X)) pop_back (tuple t) asm "UNCONS";
-(int) pow (int x) asm "POW2";
-
-;; ;; testable
-;; (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
-;;
-;;   int flen = ubits(flag);
-;;   int vlen = ubits(value);
-;;
-;;   int flagbuffer = 0;
-;;   int flagbufferlen = 0;
-;;   int fmask = ~ (1 << flen);
-;;
-;;   int writebuffer = 0;
-;;   int writebufferlen = 0;
-;;
-;;   int rbits = 0;
-;;
-;;   tuple resstack = null();
-;;   builder b = begin_cell();
-;;
-;;   slice s = linked_list.begin_parse();
-;;
-;; ;;   if s.slice_bits() > flen {
-;; ;;     writebuffer = s~load_uint(flen);
-;; ;;     writebufferlen = flen;
-;; ;;   }
-;;
-;;   repeat (s.slice_bits()) {
-;;     int bit = s~load_uint(1);
-;;     rbits = flen - flagbufferlen - 1;
-;;     flagbuffer += (bit << rbits);
-;;     flagbufferlen += 1;
-;;
-;;     if (rbits == 0) {
-;;       int builderrbits = 1023 - b.builder_bits();
-;;       if flagbuffer == flag {
-;;         writebuffer = value;
-;;         writebufferlen = vlen;
-;;         flagbuffer = 0;
-;;         flagbufferlen = 0;
-;;       } else {
-;;         writebuffer = flagbuffer >> flen - 1;
-;;         writebufferlen = 1;
-;;         flagbuffer = (flagbuffer << 1) & fmask;
-;;         flagbufferlen -= 1;
-;;       }
-;;
-;;       if builderrbits > writebufferlen {
-;;         b~store_uint(writebuffer, writebufferlen);
-;;       } else {
-;;         resstack~push_back(b);
-;;         b = begin_cell().store_uint(writebuffer, writebufferlen);
-;;       }
-;;     }
-;;   }
-;;
-;;   repeat s.slice_depth() {
-;;     s = s.preload_ref().begin_parse();
-;;     repeat (s.slice_bits()) {
-;;       int bit = s~load_uint(1);
-;;       rbits = flen - flagbufferlen - 1;
-;;       flagbuffer += (bit << rbits);
-;;       flagbufferlen += 1;
-;;
-;;       if (rbits == 0) {
-;;         int builderrbits = 1023 - b.builder_bits();
-;;         if flagbuffer == flag {
-;;           writebuffer = value;
-;;           writebufferlen = vlen;
-;;           flagbuffer = 0;
-;;           flagbufferlen = 0;
-;;         } else {
-;;           writebuffer = flagbuffer >> flen - 1;
-;;           writebufferlen = 1;
-;;           flagbuffer = (flagbuffer << 1) & fmask;
-;;           flagbufferlen -= 1;
-;;         }
-;;
-;;         if builderrbits > writebufferlen {
-;;           b~store_uint(writebuffer, writebufferlen);
-;;         } else {
-;;           resstack~push_back(b);
-;;           b = begin_cell().store_uint(writebuffer, writebufferlen);
-;;         }
-;;       }
-;;     }
-;;   }
-;;
-;;   if (1023 - b.builder_bits()) > flagbufferlen {
-;;     b~store_uint(flagbuffer >> flen - flagbufferlen, flagbufferlen);
-;;   } else {
-;;     resstack~push_back(b);
-;;     b = begin_cell().store_uint(flagbuffer >> flen - flagbufferlen, flagbufferlen);
-;;   }
-;;
-;;   resstack~push_back(b);
-;;
-;;   resstack~dump();
-;;
-;;   if (resstack.is_null()) {
-;;     return begin_cell().end_cell();
-;;   }
-;;
-;;   builder res = resstack~pop_back();
-;;
-;;
-;;   while (~ resstack.is_null()) {
-;;     res = resstack~pop_back().store_ref(res.end_cell());
-;;   }
-;;
-;;   return res.end_cell();
-;;
-;; }
-
-tuple write_to_stack(tuple st, int v, int size) inline {
-  builder b = st~pop_back();
-  int bsize = 1023 - b.builder_bits();
-  if bsize >= size {
-    b~store_uint(v, size);
-  } else {
-    st~push_back(b);
-    b = begin_cell().store_uint(v, size);
-  }
-  st~push_back(b);
-  return st;
-}
-
-tuple replacer(cell c, tuple st, int buffer, int buffer_len, int flag, int flen, int value ) inline {
-  slice s = c.begin_parse();
-
-  while (~ s.slice_data_empty?()) {
-    if (buffer_len == 0) & (s.slice_bits() >= flen)  {
-      buffer_len = flen;
-      buffer = s~load_uint(flen);
-      if buffer == flag {
-        st = write_to_stack(st, value, ubits(value));
-        buffer = 0;
-        buffer_len = 0;
-      } else {
-        st = write_to_stack(st, buffer >> (buffer_len - 1), 1);
-        buffer &= pow(buffer_len - 1) - 1;
-        buffer_len -= 1;
-      }
-    } else {
-
-      buffer <<= 1;
-      buffer |= s~load_uint(1);
-      buffer_len += 1;
-    }
-
-    if buffer_len == flen {
-      if buffer == flag {
-        st = write_to_stack(st, value, ubits(value));
-        buffer = 0;
-        buffer_len = 0;
-      } else {
-        st = write_to_stack(st, buffer >> (buffer_len - 1), 1);
-        buffer &= pow(buffer_len - 1) - 1;
-        buffer_len -= 1;
-      }
-    }
-
-  }
-
-  if ~ s.slice_refs_empty?() {
-    return replacer(s.preload_ref(), st, buffer, buffer_len, flag, flen, value );
-  }
-
-  st = write_to_stack(st, buffer, buffer_len);
-
-  return st;
-}
 
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
+
   int flen = ubits(flag);
   int vlen = ubits(value);
-  int buffer = 0;
-  int buffer_len = 0;
 
-  tuple stack = null();
-  stack~push_back(begin_cell());
+  int flagbuffer = 0;
+  int flagbufferlen = 0;
+  int fmask = ~ (1 << flen);
 
-;;   stack~dump();
+  int writebuffer = 0;
+  int writebufferlen = 0;
 
-  stack = replacer(linked_list, stack, buffer, buffer_len, flag, flen, value );
-  if (stack.is_null()) {
+  int rbits = 0;
+
+  tuple resstack = null();
+  builder b = begin_cell();
+
+  slice s = linked_list.begin_parse();
+
+  while (~ s.slice_data_empty?()) {
+    int bit = s~load_uint(1);
+    rbits = flen - flagbufferlen - 1;
+    flagbuffer += (bit << rbits);
+    flagbufferlen += 1;
+
+    if (rbits == 0) {
+      int builderrbits = 1023 - b.builder_bits();
+      if flagbuffer == flag {
+        writebuffer = value;
+        writebufferlen = vlen;
+        flagbuffer = 0;
+        flagbufferlen = 0;
+      } else {
+        writebuffer = flagbuffer >> flen - 1;
+        writebufferlen = 1;
+        flagbuffer = (flagbuffer << 1) & fmask;
+        flagbufferlen -= 1;
+      }
+
+      if builderrbits > writebufferlen {
+        b~store_uint(writebuffer, writebufferlen);
+      } else {
+        resstack~push_back(b);
+        b = begin_cell().store_uint(writebuffer, writebufferlen);
+      }
+    }
+  }
+
+  repeat s.slice_depth() {
+    s = s.preload_ref().begin_parse();
+    while (~ s.slice_data_empty?()) {
+      int bit = s~load_uint(1);
+      rbits = flen - flagbufferlen - 1;
+      flagbuffer += (bit << rbits);
+      flagbufferlen += 1;
+
+      if (rbits == 0) {
+        int builderrbits = 1023 - b.builder_bits();
+        if flagbuffer == flag {
+          writebuffer = value;
+          writebufferlen = vlen;
+          flagbuffer = 0;
+          flagbufferlen = 0;
+        } else {
+          writebuffer = flagbuffer >> flen - 1;
+          writebufferlen = 1;
+          flagbuffer = (flagbuffer << 1) & fmask;
+          flagbufferlen -= 1;
+        }
+
+        if builderrbits > writebufferlen {
+          b~store_uint(writebuffer, writebufferlen);
+        } else {
+          resstack~push_back(b);
+          b = begin_cell().store_uint(writebuffer, writebufferlen);
+        }
+      }
+    }
+  }
+
+  if (1023 - b.builder_bits()) > flagbufferlen {
+    b~store_uint(flagbuffer >> flen - flagbufferlen, flagbufferlen);
+  } else {
+    resstack~push_back(b);
+    b = begin_cell().store_uint(flagbuffer >> flen - flagbufferlen, flagbufferlen);
+  }
+
+  resstack~push_back(b);
+
+  if (resstack.is_null()) {
     return begin_cell().end_cell();
   }
 
-  builder res = stack~pop_back();
+  builder res = resstack~pop_back();
 
-  while (~ stack.is_null()) {
-    stack~pop_back();
-;;   res~dump();
-    res = stack~pop_back().store_ref(res.end_cell());
+  while (~ resstack.is_null()) {
+    res = resstack~pop_back().store_ref(res.end_cell());
   }
 
   return res.end_cell();
-;;   return begin_cell().end_cell();
+
 }
 
