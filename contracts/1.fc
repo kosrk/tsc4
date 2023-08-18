@@ -30,9 +30,10 @@ cell solve(int hash, cell c) inline asm(c hash)
         "     s1 s2 XCHG "                    ;; c1 h s0           ;;
         "   }>"                               ;; c1 c2 h s0
         "   DROP "                            ;; c1 c2 h           ;; h
-        " }> "
-        " DROP "
-        " NEWC ENDC "
+        " }> "                                                     ;;
+;;         " DROP "                                                   ;; -
+;;         " NEWC ENDC "                                              ;; ec
+        " TRY:<{ DROP NEWC ENDC }>CATCH<{ NEWC ENDC 1 RETARGS }> "
         ;
 
 ;; testable
